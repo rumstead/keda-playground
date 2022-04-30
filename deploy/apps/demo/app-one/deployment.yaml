@@ -5,7 +5,13 @@ metadata:
   namespace: default
 spec:
   replicas: 3
+  selector:
+    matchLabels:
+      app: app-one
   template:
+    metadata:
+      labels:
+        app: app-one
     spec:
       containers:
         - name: app-one
