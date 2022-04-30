@@ -1,0 +1,22 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: deploy-one
+spec:
+  scaleTargetRef:
+#    apiVersion:    {api-version-of-target-resource}  # Optional. Default: apps/v1
+#    kind:          {kind-of-target-resource}         # Optional. Default: Deployment
+    name:                   # Mandatory. Must be in the same namespace as the ScaledObject
+#    envSourceContainerName: {container-name}         # Optional. Default: .spec.template.spec.containers[0]
+  pollingInterval:  30                               # Optional. Default: 30 seconds
+  cooldownPeriod:   300                              # Optional. Default: 300 seconds
+  idleReplicaCount: 1                                # Optional. Default: ignored, must be less than minReplicaCount
+  minReplicaCount:  0                                # Optional. Default: 0
+  maxReplicaCount:  5                                # Optional. Default: 100
+  fallback:                                          # Optional. Section to specify fallback options
+    failureThreshold: 3                              # Mandatory if fallback section is included
+    replicas: 3                                      # Mandatory if fallback section is included
+  triggers:
+    - type: external
+      metadata:
+        scalerAddress: static-scaler:6000

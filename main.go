@@ -6,6 +6,7 @@ import (
 	"keda-cnp-scaler/pkg/scalers/static"
 	"log"
 	"net"
+	"net/http"
 )
 
 func main() {
@@ -15,10 +16,20 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	pb.RegisterExternalScalerServer(grpcServer, &static.Scaler{})
+	staticScaler := static.NewStaticScaler()
+	err = setupHTTPServer()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	pb.RegisterExternalScalerServer(grpcServer, staticScaler)
 
 	log.Printf("listening on %s\n", port)
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func setupHTTPServer() error {
+	return http.ListenAndServe(":8080", nil)
 }
