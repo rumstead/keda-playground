@@ -1,13 +1,13 @@
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
-  name: deploy-one
+  name: deploy-two
   namespace: default
 spec:
   scaleTargetRef:
 #    apiVersion:    {api-version-of-target-resource}  # Optional. Default: apps/v1
 #    kind:          {kind-of-target-resource}         # Optional. Default: Deployment
-    name: app-one                  # Mandatory. Must be in the same namespace as the ScaledObject
+    name: app-two                  # Mandatory. Must be in the same namespace as the ScaledObject
 #    envSourceContainerName: {container-name}         # Optional. Default: .spec.template.spec.containers[0]
   pollingInterval:  30                               # Optional. Default: 30 seconds
   cooldownPeriod:   300                              # Optional. Default: 300 seconds
