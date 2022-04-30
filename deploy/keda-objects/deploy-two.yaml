@@ -14,9 +14,6 @@ spec:
 #  idleReplicaCount: 1                                # Optional. Default: ignored, must be less than minReplicaCount
   minReplicaCount:  0                                # Optional. Default: 0
   maxReplicaCount:  5                                # Optional. Default: 100
-  fallback:                                          # Optional. Section to specify fallback options
-    failureThreshold: 3                              # Mandatory if fallback section is included
-    replicas: 3                                      # Mandatory if fallback section is included
   triggers:
     - type: external
       metadata:
