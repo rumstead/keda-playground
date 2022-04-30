@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: 'https://github.com/rumstead/keda-playground.git'
-    path: deploy/demo
+    path: deploy/apps/demo
     targetRevision: HEAD
   destination:
     server: 'https://kubernetes.default.svc'
