@@ -16,7 +16,7 @@ spec:
       containers:
         - name: app-two
           image: busybox
-          imagePullPolicy: Never
+          imagePullPolicy: Always
           args:
             - sleep
             - infinity
