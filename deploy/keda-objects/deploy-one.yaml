@@ -19,4 +19,4 @@ spec:
   triggers:
     - type: external
       metadata:
-        scalerAddress: static-scaler:6000
+        scalerAddress: keda-playground.default.svc.cluster.local:6000

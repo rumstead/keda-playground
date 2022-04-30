@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-two
+spec:
+  replicas: 5
+  template:
+    spec:
+      containers:
+        - name: app-two
+          image: busybox
+          imagePullPolicy: Never
+          args:
+            - sleep
+            - infinity
+          ports:
+            - name: http
+              containerPort: 4200
+              protocol: TCP
