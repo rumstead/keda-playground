@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: keda-playground
+  name: keda-playground
+  namespace: default
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: keda-playground
+  template:
+    metadata:
+      labels:
+        app: keda-playground
+    spec:
+      containers:
+        - image: keda-playground
+          imagePullPolicy: Never
+          name: keda-playground
+          ports:
+            - containerPort: 8080
+            - containerPort: 6000
+          resources: {}
+      restartPolicy: Always
