@@ -17,7 +17,7 @@ func main() {
 		log.Fatal(err)
 	}
 	staticScaler := static.NewStaticScaler()
-	err = setupHTTPServer()
+	err = setupHTTPServer(staticScaler)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -30,6 +30,9 @@ func main() {
 	}
 }
 
-func setupHTTPServer() error {
+func setupHTTPServer(scaler *static.Scaler) error {
+	http.HandleFunc("/switch", func(writer http.ResponseWriter, request *http.Request) {
+		scaler.Swap()
+	})
 	return http.ListenAndServe(":8080", nil)
 }
