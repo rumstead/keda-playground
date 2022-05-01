@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"google.golang.org/grpc"
 	pb "keda-cnp-scaler/pkg/scalers/protos"
 	"keda-cnp-scaler/pkg/scalers/static"
@@ -17,10 +18,7 @@ func main() {
 		log.Fatal(err)
 	}
 	staticScaler := static.NewStaticScaler()
-	err = setupHTTPServer(staticScaler)
-	if err != nil {
-		log.Fatal(err)
-	}
+	setupHTTPServer(staticScaler)
 
 	pb.RegisterExternalScalerServer(grpcServer, staticScaler)
 
@@ -30,9 +28,18 @@ func main() {
 	}
 }
 
-func setupHTTPServer(scaler *static.Scaler) error {
+func setupHTTPServer(scaler *static.Scaler) {
 	http.HandleFunc("/switch", func(writer http.ResponseWriter, request *http.Request) {
-		scaler.Swap()
+		old := scaler.Swap()
+		response := fmt.Sprintf("From %t to %t\n", old, scaler.Down())
+		_, _ = writer.Write([]byte(response))
 	})
-	return http.ListenAndServe(":8080", nil)
+	go func() error {
+		err := http.ListenAndServe(":8080", nil)
+		if err != nil {
+			log.Fatal(err)
+			return err
+		}
+		return nil
+	}()
 }

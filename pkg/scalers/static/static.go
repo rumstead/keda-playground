@@ -2,6 +2,7 @@ package static
 
 import (
 	"context"
+	"log"
 	"sync"
 	"time"
 )
@@ -12,19 +13,20 @@ type Scaler struct {
 	readWriteLock sync.RWMutex
 }
 
-func (s *Scaler) Swap() {
+func (s *Scaler) Swap() bool {
 	s.readWriteLock.Lock()
 	defer s.readWriteLock.Unlock()
 	s.down = !s.down
+	log.Printf("swap: %t\n", s.down)
+	return !s.down
 }
 
 func (s *Scaler) Down() bool {
-	s.readWriteLock.RLock()
-	defer s.readWriteLock.Unlock()
 	return s.down
 }
 
 func (s *Scaler) IsActive(_ context.Context, _ *pb.ScaledObjectRef) (*pb.IsActiveResponse, error) {
+	log.Printf("IsActive: %t\n", s.Down())
 	return &pb.IsActiveResponse{
 		Result: s.Down(),
 	}, nil
@@ -34,6 +36,7 @@ func (s *Scaler) StreamIsActive(scaledObj *pb.ScaledObjectRef, epsServer pb.Exte
 	for {
 		select {
 		case <-epsServer.Context().Done():
+			log.Println("Call cancelled...")
 			// call cancelled
 			return nil
 		case <-time.Tick(5 * time.Millisecond):
@@ -50,11 +53,29 @@ func (s *Scaler) StreamIsActive(scaledObj *pb.ScaledObjectRef, epsServer pb.Exte
 }
 
 func (s *Scaler) GetMetricSpec(context.Context, *pb.ScaledObjectRef) (*pb.GetMetricSpecResponse, error) {
-	return &pb.GetMetricSpecResponse{}, nil
+	return &pb.GetMetricSpecResponse{
+		MetricSpecs: []*pb.MetricSpec{{
+			MetricName: "empty",
+		}},
+	}, nil
 }
 
-func (s *Scaler) GetMetrics(context.Context, *pb.GetMetricsRequest) (*pb.GetMetricsResponse, error) {
-	return &pb.GetMetricsResponse{}, nil
+func (s *Scaler) GetMetrics(ctx context.Context, _ *pb.GetMetricsRequest) (*pb.GetMetricsResponse, error) {
+	isActive, err := s.IsActive(ctx, &pb.ScaledObjectRef{})
+	if err != nil {
+		return nil, err
+	}
+	metricValue := 0
+	if isActive.Result {
+		metricValue = 100
+	}
+
+	return &pb.GetMetricsResponse{
+		MetricValues: []*pb.MetricValue{{
+			MetricName:  "empty",
+			MetricValue: int64(metricValue),
+		}},
+	}, nil
 }
 
 func NewStaticScaler() *Scaler {
