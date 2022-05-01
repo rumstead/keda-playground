@@ -3,6 +3,7 @@ package static
 import (
 	"context"
 	"log"
+	"math"
 	"sync"
 	"time"
 )
@@ -57,27 +58,14 @@ func (s *Scaler) StreamIsActive(scaledObj *pb.ScaledObjectRef, epsServer pb.Exte
 func (s *Scaler) GetMetricSpec(context.Context, *pb.ScaledObjectRef) (*pb.GetMetricSpecResponse, error) {
 	return &pb.GetMetricSpecResponse{
 		MetricSpecs: []*pb.MetricSpec{{
-			MetricName: "empty",
+			MetricName: "",
+			TargetSize: int64(math.MaxInt),
 		}},
 	}, nil
 }
 
-func (s *Scaler) GetMetrics(ctx context.Context, _ *pb.GetMetricsRequest) (*pb.GetMetricsResponse, error) {
-	isActive, err := s.IsActive(ctx, &pb.ScaledObjectRef{})
-	if err != nil {
-		return nil, err
-	}
-	metricValue := 0
-	if isActive.Result {
-		metricValue = 100
-	}
-
-	return &pb.GetMetricsResponse{
-		MetricValues: []*pb.MetricValue{{
-			MetricName:  "empty",
-			MetricValue: int64(metricValue),
-		}},
-	}, nil
+func (s *Scaler) GetMetrics(_ context.Context, _ *pb.GetMetricsRequest) (*pb.GetMetricsResponse, error) {
+	return nil, nil
 }
 
 func NewStaticScaler() *Scaler {
