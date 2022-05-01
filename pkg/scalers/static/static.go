@@ -22,6 +22,8 @@ func (s *Scaler) Swap() bool {
 }
 
 func (s *Scaler) Down() bool {
+	s.readWriteLock.RLock()
+	defer s.readWriteLock.RUnlock()
 	return s.down
 }
 
