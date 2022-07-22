@@ -13,7 +13,7 @@ spec:
   cooldownPeriod:   300                              # Optional. Default: 300 seconds
 #  idleReplicaCount: 1                                # Optional. Default: ignored, must be less than minReplicaCount
   minReplicaCount:  0                                # Optional. Default: 0
-#  maxReplicaCount:  3                                # Optional. Default: 100
+  maxReplicaCount:  3                                # Optional. Default: 100
   triggers:
     - type: metrics-api
       metadata:

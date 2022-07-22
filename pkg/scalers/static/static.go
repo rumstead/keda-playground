@@ -4,13 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"math"
 	"net/http"
 )
 
 func (s *Scaler) HandleScale(writer http.ResponseWriter, request *http.Request) {
 	var scale scaleResponse
-	if s.down {
+	if !s.down {
 		log.Println("Handling down scale")
 		scale = scaleResponse{
 			Name:     "foo",
@@ -22,7 +21,7 @@ func (s *Scaler) HandleScale(writer http.ResponseWriter, request *http.Request) 
 		log.Println("Handling up scale")
 		scale = scaleResponse{
 			Name:     "foo",
-			Replicas: math.MaxInt64,
+			Replicas: 100000,
 			Region:   "east",
 			Primary:  true,
 		}
