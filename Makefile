@@ -9,3 +9,5 @@ test:
 clean:
 	rm -rf ./dist
 	docker rmi keda-playground
+port-forward:
+	kubectl port-forward -n argocd deploy/argocd-server 8080:8080 2>&1 > /dev/null &
