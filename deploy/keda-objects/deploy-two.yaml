@@ -15,7 +15,7 @@ spec:
   minReplicaCount:  0                                # Optional. Default: 0
 #  maxReplicaCount:  3                                # Optional. Default: 100
   triggers:
-    - type: metric-api
+    - type: metrics-api
       metadata:
         targetValue: "3"
         url: "keda-playground.default.svc.cluster.local:8080/scale"
