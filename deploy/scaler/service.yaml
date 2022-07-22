@@ -11,10 +11,6 @@ spec:
     port: 8080
     protocol: TCP
     targetPort: 8080
-  - name: 6000-6000
-    port: 6000
-    protocol: TCP
-    targetPort: 6000
   selector:
     app: keda-playground
   type: ClusterIP

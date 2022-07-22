@@ -1,71 +1,50 @@
 package static
 
 import (
-	"context"
+	"encoding/json"
+	"fmt"
 	"log"
 	"math"
-	"sync"
-	"time"
+	"net/http"
 )
-import pb "keda-cnp-scaler/pkg/scalers/protos"
 
-type Scaler struct {
-	down          bool
-	readWriteLock sync.RWMutex
+func (s *Scaler) HandleScale(writer http.ResponseWriter, request *http.Request) {
+	var scale scaleResponse
+	if s.down {
+		scale = scaleResponse{
+			Name:     "foo",
+			Replicas: 0,
+			Region:   "east",
+			Primary:  false,
+		}
+	} else {
+		scale = scaleResponse{
+			Name:     "foo",
+			Replicas: math.MaxInt64,
+			Region:   "east",
+			Primary:  true,
+		}
+	}
+	response, err := json.Marshal(scale)
+	if err != nil {
+		_, _ = writer.Write([]byte(err.Error()))
+		return
+	}
+	_, _ = writer.Write(response)
 }
 
-func (s *Scaler) Swap() bool {
+func (s *Scaler) HandleSwap(writer http.ResponseWriter, request *http.Request) {
+	old := s.swap()
+	response := fmt.Sprintf("From %t to %t\n", old, s.down)
+	_, _ = writer.Write([]byte(response))
+}
+
+func (s *Scaler) swap() bool {
 	s.readWriteLock.Lock()
 	defer s.readWriteLock.Unlock()
 	s.down = !s.down
 	log.Printf("swap: %t\n", s.down)
 	return !s.down
-}
-
-func (s *Scaler) Down() bool {
-	s.readWriteLock.RLock()
-	defer s.readWriteLock.RUnlock()
-	return s.down
-}
-
-func (s *Scaler) IsActive(_ context.Context, _ *pb.ScaledObjectRef) (*pb.IsActiveResponse, error) {
-	log.Printf("IsActive: %t\n", s.Down())
-	return &pb.IsActiveResponse{
-		Result: s.Down(),
-	}, nil
-}
-
-func (s *Scaler) StreamIsActive(scaledObj *pb.ScaledObjectRef, epsServer pb.ExternalScaler_StreamIsActiveServer) error {
-	for {
-		select {
-		case <-epsServer.Context().Done():
-			log.Println("Call cancelled...")
-			// call cancelled
-			return nil
-		case <-time.Tick(5 * time.Millisecond):
-			active, err := s.IsActive(context.TODO(), scaledObj)
-			if err != nil {
-				return err
-			}
-			err = epsServer.Send(&pb.IsActiveResponse{
-				Result: active.Result,
-			})
-			return err
-		}
-	}
-}
-
-func (s *Scaler) GetMetricSpec(context.Context, *pb.ScaledObjectRef) (*pb.GetMetricSpecResponse, error) {
-	return &pb.GetMetricSpecResponse{
-		MetricSpecs: []*pb.MetricSpec{{
-			MetricName: "",
-			TargetSize: int64(math.MaxInt),
-		}},
-	}, nil
-}
-
-func (s *Scaler) GetMetrics(_ context.Context, _ *pb.GetMetricsRequest) (*pb.GetMetricsResponse, error) {
-	return nil, nil
 }
 
 func NewStaticScaler() *Scaler {

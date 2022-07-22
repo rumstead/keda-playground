@@ -13,8 +13,10 @@ spec:
   cooldownPeriod:   300                              # Optional. Default: 300 seconds
 #  idleReplicaCount: 0                                # Optional. Default: ignored, must be less than minReplicaCount
   minReplicaCount:  0                                # Optional. Default: 0
-  maxReplicaCount:  5                                # Optional. Default: 100
+#  maxReplicaCount:  5                                # Optional. Default: 100
   triggers:
-    - type: external
+    - type: metric-api
       metadata:
-        scalerAddress: keda-playground.default.svc.cluster.local:6000
+        targetValue: "5"
+        url: "keda-playground.default.svc.cluster.local:8080/scale"
+        valueLocation: "components.worker.tasks"
