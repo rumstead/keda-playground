@@ -18,5 +18,5 @@ spec:
     - type: metrics-api
       metadata:
         targetValue: "3"
-        url: "keda-playground.default.svc.cluster.local:8080/scale"
+        url: "http://keda-playground.default.svc.cluster.local:8080/scale"
         valueLocation: "replicas"

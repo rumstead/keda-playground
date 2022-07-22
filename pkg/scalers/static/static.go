@@ -11,6 +11,7 @@ import (
 func (s *Scaler) HandleScale(writer http.ResponseWriter, request *http.Request) {
 	var scale scaleResponse
 	if s.down {
+		log.Println("Handling down scale")
 		scale = scaleResponse{
 			Name:     "foo",
 			Replicas: 0,
@@ -18,6 +19,7 @@ func (s *Scaler) HandleScale(writer http.ResponseWriter, request *http.Request) 
 			Primary:  false,
 		}
 	} else {
+		log.Println("Handling up scale")
 		scale = scaleResponse{
 			Name:     "foo",
 			Replicas: math.MaxInt64,
@@ -34,6 +36,7 @@ func (s *Scaler) HandleScale(writer http.ResponseWriter, request *http.Request) 
 }
 
 func (s *Scaler) HandleSwap(writer http.ResponseWriter, request *http.Request) {
+	log.Println("Handling Swap")
 	old := s.swap()
 	response := fmt.Sprintf("From %t to %t\n", old, s.down)
 	_, _ = writer.Write([]byte(response))
