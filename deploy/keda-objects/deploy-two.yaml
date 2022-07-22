@@ -19,4 +19,4 @@ spec:
       metadata:
         targetValue: "3"
         url: "http://keda-playground.default.svc.cluster.local:8080/scale"
-        valueLocation: "replicas"
+        valueLocation: "Replicas"
