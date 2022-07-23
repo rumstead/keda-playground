@@ -13,7 +13,7 @@ func (s *Scaler) HandleScale(writer http.ResponseWriter, request *http.Request) 
 		log.Println("Handling down scale")
 		scale = scaleResponse{
 			Name:     "foo",
-			Replicas: 0,
+			Replicas: -10000000,
 			Region:   "east",
 			Primary:  false,
 		}
@@ -28,6 +28,7 @@ func (s *Scaler) HandleScale(writer http.ResponseWriter, request *http.Request) 
 	}
 	response, err := json.Marshal(scale)
 	if err != nil {
+		log.Printf("err: %v", err)
 		_, _ = writer.Write([]byte(err.Error()))
 		return
 	}
