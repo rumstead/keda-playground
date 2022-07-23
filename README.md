@@ -2,4 +2,4 @@
 ## Deployment
 Manifests to deploy are under the `deploy` folder. 
 ## Demo
-[Demo](demo/keda-demo.mp4)
+![Demo](demo/keda-demo.gif)
